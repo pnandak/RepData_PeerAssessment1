@@ -3,7 +3,8 @@
 
 In the code chunk below, libraries are loaded for plotting using ggplot, the input data is read, rows with steps data unavailable are removed, the number of steps by day are summed.
 
-```{r}
+
+```r
 # COMMENT : download and untar the files 
 # url <- 'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
 # download.file(url, destfile="./repdata-data-activity.zip",method="curl")
@@ -27,7 +28,8 @@ freqs$names <- as.Date(freqs$Group.1, format="%Y-%m-%d")
 ### What is mean total number of steps taken per day?
 In the code chunk below, the data is plotted in a histogram and the mean and median steps taken are determined.
 
-```{r, echo=TRUE}
+
+```r
 # create histogram
 ggplot(freqs, aes(x=names, y=x)) + geom_bar(stat="identity") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  
@@ -35,21 +37,24 @@ ggplot(freqs, aes(x=names, y=x)) + geom_bar(stat="identity") +
     labs(x = "Date",
          y = "Steps",
          title = "Total Steps by Date")
+```
 
-``` 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
 
 The Mean and Median is 
 
-```{r}
+
+```r
 theMean <- mean(freqs$x)
 theMedian <- median(freqs$x)
 ```
-**When the NA values are omitted, the mean steps by date is `r theMean` and the median is `r theMedian`.**
+**When the NA values are omitted, the mean steps by date is 1.0766189 &times; 10<sup>4</sup> and the median is 10765.**
 
 ###  What is the average daily activity pattern?  
 
 In the code chunk below, the average number of steps by 5 minute interval are determined and plotted using a line graph, and the 5 minute interval with the max number of steps is determined.
-```{r}
+
+```r
 byInterval <- aggregate(inputMinusNA$steps, by=list(inputMinusNA$interval), FUN=mean)
 
 ggplot(byInterval) + geom_line(aes(x=Group.1, y=x)) +
@@ -58,10 +63,12 @@ ggplot(byInterval) + geom_line(aes(x=Group.1, y=x)) +
     labs(x = "5 Minute Interval",
          y = "Average Steps Taken",
          title = "Average Number of Steps Taken by Five Minute Interval",col="")  
-
 ```
 
-```{r}
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+
+```r
 theMax <- byInterval[ which(byInterval$x==(max(byInterval$x))),]$Group.1
 ```
 **From the graph, 'r theMax` is the 5-minute interval,where it contains maximum number of steps**  
@@ -76,7 +83,8 @@ The NA values are replaced, summaries are generated, total steps by day are plot
 
 ### Count NA's  
 
-```{r}
+
+```r
 library(mice)
 
 countNA <- nrow(input[is.na(input$steps),])
@@ -84,11 +92,23 @@ countNA <- nrow(input[is.na(input$steps),])
 ### NOTE: could also have ouput the NA count using Summary, as shown below
 summary(input)
 ```
-**The number of NAs in the input data is `r countNA`.**  
+
+```
+##      steps             date               interval     
+##  Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0  
+##  1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8  
+##  Median :  0.00   Median :2012-10-31   Median :1177.5  
+##  Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5  
+##  3rd Qu.: 12.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2  
+##  Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0  
+##  NA's   :2304
+```
+**The number of NAs in the input data is 2304.**  
 
 ### Histogram of the total number of steps taken each day  
 
-```{r}
+
+```r
 ## Using Predictive mean matching and the mice package to replace NA values in steps
 steps <- input$steps
 intervals <- input$interval
@@ -106,12 +126,14 @@ ggplot(adjustedFreqs, aes(x=names, y=x)) + geom_bar(stat="identity") +
     labs(x = "Date",
          y = "Steps",
          title = "Total Steps by Date With Predicted Missing Values")
-
 ```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
   
 ### Mean and Median After Imputation  
 
-```{r}
+
+```r
 adjustedMean <- mean(adjustedFreqs$x)
 adjustedMedian <- median(adjustedFreqs$x)
 
@@ -127,13 +149,14 @@ inputAdjusted$dayType <- sapply(weekdays(inputAdjusted$date), switch,
 inputAdjusted$dayType <- as.factor(inputAdjusted$dayType)
 ```
 
-**When the NA values are simulated, the mean steps by day becomes `r adjustedMean`
-and the median becomes `r adjustedMedian`
-(compared to previous mean/median values of `r theMean`/`r theMedian`**
+**When the NA values are simulated, the mean steps by day becomes 1.087582 &times; 10<sup>4</sup>
+and the median becomes 10765
+(compared to previous mean/median values of 1.0766189 &times; 10<sup>4</sup>/10765**
 
 In order to create a panel graph with ggplot, the following function is used:  
 
-```{r}
+
+```r
 ## create multiplot function
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   require(grid)
@@ -175,7 +198,8 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 In the final code chunk, the adjusted (replaced NA values) data is split by weekday or weekend. The resulting data sets are aggregated to obtain the means by interval. The resulting data sets are plotted and then combined to create a panel display containing two separate line graphs, using the multiplot function shown earlier, in order to leverage gglplot.
 
-```{r}
+
+```r
 ### Create Weekends Data Set
 weekends <- sample(inputAdjusted[inputAdjusted$dayType=="Weekend",])
 
@@ -203,6 +227,8 @@ p2 <- ggplot(weekdayInterval) + geom_line(aes(x=Group.1, y=x)) +
 
 multiplot(p1, p2, cols=1)
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
 
 Looks like activity is higher on the weekends, particularly in the middle of the day, although it is lower early in the morning just after waking.
 
