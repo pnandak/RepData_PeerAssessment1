@@ -1,4 +1,10 @@
-## Reproducible Research - Assignment 1
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
 ### Loading and preprocessing the data
 
 In the code chunk below, libraries are loaded for plotting using ggplot, the input data is read, rows with steps data unavailable are removed, the number of steps by day are summed.
@@ -71,7 +77,8 @@ ggplot(byInterval) + geom_line(aes(x=Group.1, y=x)) +
 ```r
 theMax <- byInterval[ which(byInterval$x==(max(byInterval$x))),]$Group.1
 ```
-**From the graph, 'r theMax` is the 5-minute interval,where it contains maximum number of steps**  
+
+**From the graph, 835 is the 5-minute interval,where it contains maximum number of steps**  
 
 ### Imputing Missing Values  
 
@@ -149,8 +156,8 @@ inputAdjusted$dayType <- sapply(weekdays(inputAdjusted$date), switch,
 inputAdjusted$dayType <- as.factor(inputAdjusted$dayType)
 ```
 
-**When the NA values are simulated, the mean steps by day becomes 1.087582 &times; 10<sup>4</sup>
-and the median becomes 10765
+**When the NA values are simulated, the mean steps by day becomes 1.0677459 &times; 10<sup>4</sup>
+and the median becomes 10600
 (compared to previous mean/median values of 1.0766189 &times; 10<sup>4</sup>/10765**
 
 In order to create a panel graph with ggplot, the following function is used:  
